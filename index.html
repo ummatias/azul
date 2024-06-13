@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azul Board Game</title>
+</head>
+
+<body>
+    <h1>Azul Board Game</h1>
+
+    <h2>Stores</h2>
+    <div>
+        {% for i, store in enumerate(game.game_board.stores) %}
+        <p>Store {{ i }}: {{ store }}</p>
+        {% endfor %}
+    </div>
+
+    <h2>Center</h2>
+    <div>
+        <p>{{ game.game_board.center }}</p>
+    </div>
+
+    <h2>Current Player: {{ game.current_player + 1 }}</h2>
+    <form action="/select" method="post">
+        <label for="store_index">Store Index:</label>
+        <input type="text" id="store_index" name="store_index" required>
+        <label for="piece">Piece:</label>
+        <input type="text" id="piece" name="piece" required>
+        <button type="submit">Select</button>
+    </form>
+
+    <h2>Players</h2>
+    <div>
+        {% for i, player in enumerate(game.players) %}
+        <h3>Player {{ i + 1 }}</h3>
+        <p>Score: {{ player.score }}</p>
+        <p>Board:</p>
+        <ul>
+            {% for row in player.board %}
+            <li>{{ row }}</li>
+            {% endfor %}
+        </ul>
+        <p>Build Tower:</p>
+        <ul>
+            {% for row in player.build_tower %}
+            <li>{{ row }}</li>
+            {% endfor %}
+        </ul>
+        <p>Broken Pieces: {{ player.broken_pieces }}</p>
+        {% endfor %}
+    </div>
+</body>
+
+</html>
