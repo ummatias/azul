@@ -1,40 +1,60 @@
-import playerboard
+from game import Game
 from gameboard import GameBoard
+from playerboard import PlayerBoard
 
-
-COLOR_MAP = {
-    'R': '\x1B[31m',
-    'U': "\x1B[34m",
-    'Y': "\x1B[33m",
-    'B': "\x1B[36m",
-    'L': "\x1B[35m",
-    'X': "\x1B[0m",
+color_map = {
+    "🟥": "\033[48;2;224;192;192;10m",  # Low-saturation red
+    "🟩": "\033[48;2;192;224;192;10m",  # Low-saturation green
+    "🟦": "\033[48;2;192;192;224;10m",  # Low-saturation blue
+    "⬛": "\033[48;2;192;192;192;10m",  # Low-saturation black
+    "🟧": "\033[48;2;224;224;192;10m",  # Low-saturation yellow
 }
 
-def print_boards(gameboard, board_p1, board_p2):
-    gameboard.print_board()
-    space = 60
-    print('-' * (50 + space))
-    print('Player 1' + ' ' * space + 'Player 2')
-    print('-' * (50 + space))
-    print(f'Score: {board_p1.score}' + ' ' * space + f'Score: {board_p2.score}')
-    print('-' * (50 + space))
-    for i in range(5):
-        #replace None with ' ' for better visualization
-        #print then board
+
+def emoji_with_color(emoji: str, flag: int) -> str:
+    if flag == 0:
+        return f"{color_map[emoji]}{'    '}\033[0m"
+    else:
+        return f"{color_map[emoji]} { emoji } \033[0m"
+
+
+def print_boards(
+    gameboard: GameBoard, board_p1: PlayerBoard, board_p2: PlayerBoard
+) -> None:
+
+    print(" " * 7 + "STORE")
+    for row_index, row in enumerate(gameboard.stores):
+        print(f"{row_index} | {' '.join(cell[0] for cell in row)}")
+
+    print("C |", " ".join(cell[0] for cell in gameboard.center))
+
+    print("-" * 85)
+
+    print("Player 1".ljust(50) + "Player 2")
+    print("-" * 85)
+
+    print("Score: 0".ljust(50) + "Score: 0")
+    print("-" * 85)
+
+    for i in range(len(board_p1.build_tower)):
+        tower_1 = board_p1.build_tower[i]
+        tower_2 = board_p2.build_tower[i]
         print(
-            f'{i} | {[p if p else " " for p in board_p1.build_tower[i]]}'
-            + ' ' * ((space - 40) - (i*5)) + '|' 
-            + f'{[ p[0].lower() if p[1] == 0 else p[0] for p in board_p1.board[i]]}'
-            + ' ' * 13
-            + f'{i} | {[p if p else " " for p in board_p2.build_tower[i]]}'
-            + ' ' * ((space - 40) - (i*5)) + '|'
-            + f'{[ p[0] for p in board_p2.board[i]]}'
-            
+            f"{i} |{' ' * (10 - 2*len(tower_1))} {' '.join('.' if cell is None else cell[0] for cell in tower_1)}",
+            end=" | ",
+        )
+        print(
+            f"{i} | {' '.join(emoji_with_color(cell[0], cell[1]) for cell in board_p1.board[i])}",
+            end=" | ",
         )
 
-gbord = GameBoard(2)
-p1 = playerboard.PlayerBoard()
-p2 = playerboard.PlayerBoard()
+        print(" " * 13, end="")
 
-print_boards(gbord, p1, p2)
+        print(
+            f"{i} |{' ' * (10 - 2*len(tower_2))} {' '.join('.' if cell is None else cell[0] for cell in tower_2)}",
+            end=" | ",
+        )
+
+        print(
+            f"{i} | {' '.join(emoji_with_color(cell[0], cell[1]) for cell in board_p1.board[i])}"
+        )

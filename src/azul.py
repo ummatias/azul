@@ -1,6 +1,7 @@
-import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './'))
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./"))
 
 from game import Game
 

@@ -1,11 +1,11 @@
 class PlayerBoard:
     def __init__(self) -> None:
         self.board = [
-            [('U', 0), ('Y', 0), ('R', 0), ('B', 0), ('L', 0)],
-            [('L', 0), ('U', 0), ('Y', 0), ('R', 0), ('B', 0)],
-            [('B', 0), ('L', 0), ('U', 0), ('Y', 0), ('R', 0)],
-            [('R', 0), ('B', 0), ('L', 0), ('U', 0), ('Y', 0)],
-            [('Y', 0), ('R', 0), ('B', 0), ('L', 0), ('U', 0)],
+            [("🟦", 0), ("🟧", 0), ("🟥", 0), ("⬛", 0), ("🟩", 0)],
+            [("🟩", 0), ("🟦", 0), ("🟧", 0), ("🟥", 0), ("⬛", 0)],
+            [("⬛", 0), ("🟩", 0), ("🟦", 0), ("🟧", 0), ("🟥", 0)],
+            [("🟥", 0), ("⬛", 0), ("🟩", 0), ("🟦", 0), ("🟧", 0)],
+            [("🟧", 0), ("🟥", 0), ("⬛", 0), ("🟩", 0), ("🟦", 0)],
         ]
         self.build_tower = [
             [None],
@@ -22,7 +22,7 @@ class PlayerBoard:
         piece_type = pieces[0]
         # Check if the piece is already on the wall for this line
         if piece_type in [p for p, filled in self.board[line] if filled == 1]:
-            print('Invalid Placement! Piece already on the wall.')
+            print("Invalid Placement! Piece already on the wall.")
             self.broken_pieces.extend(pieces)
             self.update_score_with_penalties()
             return []
@@ -52,15 +52,7 @@ class PlayerBoard:
     def update_score_with_penalties(self) -> None:
         while len(self.broken_pieces) > 7:
             self.broken_pieces.pop()
-        self.score += sum(self.penalties[:len(self.broken_pieces)])
-
-    def print_tower(self) -> None:
-        for i, line in enumerate(self.build_tower):
-            print(f'{i} | {line}')
-
-    def print_board(self) -> None:
-        for i, line in enumerate(self.board):
-            print(f'| {[p + str(d) for p, d in line]} |')
+        self.score += sum(self.penalties[: len(self.broken_pieces)])
 
     def fill(self, nt):
         self.build_tower = nt
