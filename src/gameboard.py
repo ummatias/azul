@@ -1,5 +1,13 @@
 class GameBoard:
     def __init__(self, qtd_players) -> None:
+        self.piece_dict = {
+            "U": "🟦",
+            "R": "🟥",
+            "B": "⬛",
+            "G": "🟩",
+            "Y": "🟧",
+            "X": "⬜",
+        }
         stores_qtd = {2: 5, 3: 7, 4: 9}
         self.center = ["⬜"]
         self.stores = [[] for _ in range(stores_qtd[qtd_players])]
@@ -9,12 +17,11 @@ class GameBoard:
             for _ in range(4):
                 store.append(pieces.pop())
 
-    def pick_piece(self, store_index: int, piece: str) -> list:
+    def pick_piece(self, store_index, piece: str) -> list:
         piece = piece.upper()
-        if not store_index.isdigit():
-            store_index = store_index.upper()
+        piece = self.piece_dict[piece]
 
-        if store_index != "C":
+        if store_index != "C" and store_index != "c":
             if piece not in self.stores[store_index]:
                 raise ValueError("Piece not in store")
 

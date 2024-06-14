@@ -1,4 +1,3 @@
-from game import Game
 from gameboard import GameBoard
 from playerboard import PlayerBoard
 
@@ -11,7 +10,7 @@ color_map = {
 }
 
 
-def emoji_with_color(emoji: str, flag: int) -> str:
+def _emoji_with_color(emoji: str, flag: int) -> str:
     if flag == 0:
         return f"{color_map[emoji]}{'    '}\033[0m"
     else:
@@ -21,40 +20,46 @@ def emoji_with_color(emoji: str, flag: int) -> str:
 def print_boards(
     gameboard: GameBoard, board_p1: PlayerBoard, board_p2: PlayerBoard
 ) -> None:
-
-    print(" " * 7 + "STORE")
+    print("-" * 115)
+    print(" " * 57 + "STORE")
     for row_index, row in enumerate(gameboard.stores):
-        print(f"{row_index} | {' '.join(cell[0] for cell in row)}")
+        print(f"{' ' * 50}" + f"{row_index} | {' '.join(cell[0] for cell in row)}")
 
-    print("C |", " ".join(cell[0] for cell in gameboard.center))
+    print(f"{' ' * 50}" + "C |", " ".join(cell[0] for cell in gameboard.center))
 
-    print("-" * 85)
+    print("-" * 115)
 
-    print("Player 1".ljust(50) + "Player 2")
-    print("-" * 85)
+    print(f"{' ' * 25}" + "Player 1".ljust(65) + "Player 2")
+    print("-" * 115)
 
-    print("Score: 0".ljust(50) + "Score: 0")
-    print("-" * 85)
+    print(
+        f"{' ' * 25}"
+        + f"Score: {board_p1.score}".ljust(65)
+        + f"Score: {board_p2.score}"
+    )
+    print("-" * 115)
 
     for i in range(len(board_p1.build_tower)):
         tower_1 = board_p1.build_tower[i]
         tower_2 = board_p2.build_tower[i]
         print(
-            f"{i} |{' ' * (10 - 2*len(tower_1))} {' '.join('.' if cell is None else cell[0] for cell in tower_1)}",
+            f"{i} |{' ' * (15 - 3*len(tower_1))} {' '.join('🟫' if cell is None else cell[0] for cell in tower_1)}",
             end=" | ",
         )
         print(
-            f"{i} | {' '.join(emoji_with_color(cell[0], cell[1]) for cell in board_p1.board[i])}",
+            f"{i} | {' '.join(_emoji_with_color(cell[0], cell[1]) for cell in board_p1.board[i])}",
             end=" | ",
         )
 
         print(" " * 13, end="")
 
         print(
-            f"{i} |{' ' * (10 - 2*len(tower_2))} {' '.join('.' if cell is None else cell[0] for cell in tower_2)}",
+            f"{i} |{' ' * (15 - 3*len(tower_2))} {' '.join('🟫' if cell is None else cell[0] for cell in tower_2)}",
             end=" | ",
         )
 
         print(
-            f"{i} | {' '.join(emoji_with_color(cell[0], cell[1]) for cell in board_p1.board[i])}"
+            f"{i} | {' '.join(_emoji_with_color(cell[0], cell[1]) for cell in board_p1.board[i])}"
         )
+
+    print("-" * 115)

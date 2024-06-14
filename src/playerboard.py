@@ -19,7 +19,11 @@ class PlayerBoard:
         self.penalties = [-1, -1, -2, -2, -2, -3, -3]
 
     def place_pieces_tower(self, pieces: list, line: int) -> list:
+        if "⬜" in pieces:
+            self.broken_pieces.append("⬜")
+            pieces.remove("⬜")
         piece_type = pieces[0]
+
         # Check if the piece is already on the wall for this line
         if piece_type in [p for p, filled in self.board[line] if filled == 1]:
             print("Invalid Placement! Piece already on the wall.")

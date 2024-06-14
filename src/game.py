@@ -2,6 +2,7 @@ import random
 
 from gameboard import GameBoard
 from playerboard import PlayerBoard
+from util import print_boards
 
 
 class Game:
@@ -20,7 +21,6 @@ class Game:
         player = self.players[self.current_player]
         print(f"Player {self.current_player + 1}")
         print("-" * 20)
-        self.game_board.print_board()
         pick = input("Pick a Piece | EX: (5U for U in Store 5, CU for U in Center): ")
         if len(pick) < 2 or (pick[0] != "C" and not pick[0].isdigit()):
             print("Invalid Input")
@@ -43,7 +43,6 @@ class Game:
         print("-" * 20)
 
         while picked:
-            player.print_tower()
             line = input(f"Place pieces in the tower (line number): ")
             try:
                 line = int(line)
@@ -60,16 +59,13 @@ class Game:
         player = self.players[self.current_player]
         print(f"Player {self.current_player + 1}")
         print("-" * 20)
-        player.print_tower()
         filled = player.check_tower()
         print("-" * 20)
         print(f"Filled lines: {filled}")
-        player.print_board()
         for line in filled:
             player.fill_board(line)
         print()
         print("-" * 20)
-        player.print_board()
         if player.check_end_game():
             player.score += player.calculate_bonus_points()
 
@@ -89,6 +85,7 @@ class Game:
         self.start()
         while not any(player.check_end_game() for player in self.players):
             while not self.all_stores_empty():
+                print_boards(self.game_board, self.players[0], self.players[1])
                 self.turn_select()
             for _ in range(len(self.players)):
                 self.turn_placement()
