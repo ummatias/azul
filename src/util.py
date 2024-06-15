@@ -1,7 +1,7 @@
 from gameboard import GameBoard
 from playerboard import PlayerBoard
 
-color_map = {
+COLOR_MAP = {
     "🟥": "\033[48;2;224;192;192;10m",  # Low-saturation red
     "🟩": "\033[48;2;192;224;192;10m",  # Low-saturation green
     "🟦": "\033[48;2;192;192;224;10m",  # Low-saturation blue
@@ -12,9 +12,9 @@ color_map = {
 
 def _emoji_with_color(emoji: str, flag: int) -> str:
     if flag == 0:
-        return f"{color_map[emoji]}{'    '}\033[0m"
+        return f"{COLOR_MAP[emoji]}{'    '}\033[0m"
     else:
-        return f"{color_map[emoji]} { emoji } \033[0m"
+        return f"{COLOR_MAP[emoji]} { emoji } \033[0m"
 
 
 def print_boards(
