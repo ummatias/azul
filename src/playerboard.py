@@ -29,7 +29,8 @@ class PlayerBoard:
 
     def place_pieces_tower(self, pieces: list, line) -> list:
         pieces = self._handle_broken_piece(pieces, "⬜")
-        if line.lower() == "b":
+
+        if line == "b" or line == "B":
             self._add_all_to_broken_pieces(pieces)
             return []
 

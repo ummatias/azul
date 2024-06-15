@@ -1,6 +1,3 @@
-from gameboard import GameBoard
-from playerboard import PlayerBoard
-
 COLOR_MAP = {
     "🟥": "\033[48;2;224;192;192;10m",  # Low-saturation red
     "🟩": "\033[48;2;192;224;192;10m",  # Low-saturation green
@@ -17,9 +14,7 @@ def _emoji_with_color(emoji: str, flag: int) -> str:
         return f"{COLOR_MAP[emoji]} { emoji } \033[0m"
 
 
-def print_boards(
-    gameboard: GameBoard, board_p1: PlayerBoard, board_p2: PlayerBoard
-) -> None:
+def print_boards(gameboard, board_p1, board_p2) -> None:
     print("-" * 115)
     print(" " * 57 + "STORE")
     for row_index, row in enumerate(gameboard.stores):
@@ -75,7 +70,7 @@ def print_boards(
         f"BROKEN: {' '.join('🟫' if cell is None else cell for cell in board_p2.broken_pieces)}",
     )
     # print the penalties
-    print(f"{" " * 8}{' '.join(str(penalty) for penalty in board_p1.penalties)}".ljust(65), end="")
-    print(f"{' ' * 8}{' '.join(str(penalty) for penalty in board_p2.penalties)}")
+    # print(f"{" " * 8}{' '.join(str(penalty) for penalty in board_p1.penalties)}".ljust(65), end="")
+    # print(f"{' ' * 8}{' '.join(str(penalty) for penalty in board_p2.penalties)}")
 
     print("-" * 115)

@@ -35,7 +35,7 @@ cd azul
 Start the game by running:
 
 ```bash
-python src/azul.py
+python src/py
 ```
 
 ## License
