@@ -16,8 +16,12 @@ class GameBoard:
         for store in self.stores:
             for _ in range(4):
                 store.append(pieces.pop())
+        self.center = ["⬜"]
 
     def pick_piece(self, store_index, piece: str) -> list:
+        if piece not in self.piece_dict:
+            raise ValueError("Invalid piece")
+
         piece = piece.upper()
         piece = self.piece_dict[piece]
 

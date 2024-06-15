@@ -45,4 +45,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## AI Project Integration
 
-The AI project repository for playing AZUL can be found [here](https://github.com/ummatias/deepblue).
+The AI project repository for playing AZUL can be found [here](https://github.com/ummatias/deepblue).       

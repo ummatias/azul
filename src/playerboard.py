@@ -14,22 +14,46 @@ class PlayerBoard:
             [None, None, None, None],
             [None, None, None, None, None],
         ]
-        self.broken_pieces = []
+        self.broken_pieces = [None, None, None, None, None, None, None]
         self.score = 0
         self.penalties = [-1, -1, -2, -2, -2, -3, -3]
 
-    def place_pieces_tower(self, pieces: list, line: int) -> list:
+    def place_pieces_tower(
+        self,
+        pieces: list,
+        line,
+    ) -> list:
         if "⬜" in pieces:
-            self.broken_pieces.append("⬜")
+            self.add_to_broken_pieces("⬜")
             pieces.remove("⬜")
+
         piece_type = pieces[0]
+
+        if line == "B" or line == "b":
+            for piece in pieces:
+                self.add_to_broken_pieces(piece)
+            return []
+
+        line = int(line)
+        if line < 0 or line >= len(self.build_tower):
+            raise ValueError("Invalid Line Number")
+
+        if (
+            set(self.build_tower[line]) != {None}
+            and piece_type not in self.build_tower[line]
+        ):
+            print("Invalid Placement! This line is filled with another tile.")
+            return pieces
+
+        # Check if has any line with empty space
+        if None not in self.build_tower[line]:
+            print("Invalid Placement! No empty space in the line.")
+            return pieces
 
         # Check if the piece is already on the wall for this line
         if piece_type in [p for p, filled in self.board[line] if filled == 1]:
             print("Invalid Placement! Piece already on the wall.")
-            self.broken_pieces.extend(pieces)
-            self.update_score_with_penalties()
-            return []
+            return pieces
 
         # Place pieces in the build tower line
         for i in range(len(self.build_tower[line])):
@@ -38,25 +62,21 @@ class PlayerBoard:
                 pieces.pop(0)
                 if not pieces:
                     break
-
-        # Any remaining pieces go to broken pieces
-        if pieces:
-            self.broken_pieces.extend(pieces)
-            self.update_score_with_penalties()
-
         return pieces
 
     def add_to_broken_pieces(self, piece) -> None:
-        if len(self.broken_pieces) < 7:
-            self.broken_pieces.append(piece)
-            self.score += self.penalties[len(self.broken_pieces) - 1]
+        if None in self.broken_pieces:
+            self.broken_pieces[self.broken_pieces.index(None)] = piece
         else:
             print(f"Piece {piece} discarded as broken pieces limit reached.")
 
-    def update_score_with_penalties(self) -> None:
-        while len(self.broken_pieces) > 7:
-            self.broken_pieces.pop()
-        self.score += sum(self.penalties[: len(self.broken_pieces)])
+    def calculate_penalties(self) -> int:
+        penality = 0
+        for i in range(len(self.broken_pieces)):
+            if self.broken_pieces[i] is not None:
+                penality += self.penalties[i]
+                self.broken_pieces[i] = None
+        return penality
 
     def fill(self, nt):
         self.build_tower = nt
@@ -96,7 +116,7 @@ class PlayerBoard:
             else:
                 break
 
-        return points
+        return points + self.calculate_penalties()
 
     def calculate_bonus_points(self) -> int:
         bonus_points = 0

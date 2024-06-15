@@ -59,7 +59,23 @@ def print_boards(
         )
 
         print(
-            f"{i} | {' '.join(_emoji_with_color(cell[0], cell[1]) for cell in board_p1.board[i])}"
+            f"{i} | {' '.join(_emoji_with_color(cell[0], cell[1]) for cell in board_p2.board[i])}"
         )
+
+    print("-" * 115)
+
+    print(
+        # if the player has broken pieces no broken pieces, print 7 🟫'
+        f"BROKEN: {' '.join('🟫' if cell is None else cell for cell in board_p1.broken_pieces)}",
+        end="".rjust(37),
+    )
+
+    print(
+        # if the player has broken pieces no broken pieces, print 7 🟫'
+        f"BROKEN: {' '.join('🟫' if cell is None else cell for cell in board_p2.broken_pieces)}",
+    )
+    # print the penalties
+    print(f"{" " * 8}{' '.join(str(penalty) for penalty in board_p1.penalties)}".ljust(65), end="")
+    print(f"{' ' * 8}{' '.join(str(penalty) for penalty in board_p2.penalties)}")
 
     print("-" * 115)
