@@ -1,6 +1,6 @@
 # AZUL Board Game Implementation
 
-This project provides a command line interface (CLI) implementation of the AZUL board game using Python vanilla. It is designed specifically for training and testing AI models on how they play AZUL.
+This project provides a command line interface (CLI) implementation of the AZUL board game using Python vanilla. It is designed specifically for training and testing AI models on how they play AZUL but can also be used as a local match simulator (It's pretty fun).
 
 ![image](https://github.com/ummatias/azul/assets/39069953/9786895d-d36f-4731-a450-b432e0925543)
 
