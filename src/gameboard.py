@@ -28,8 +28,7 @@ class GameBoard:
 
     def pick_piece(self, store_index, piece: str) -> list:
         piece = self._validate_and_convert_piece(piece)
-
-        if store_index.lower() == "c":
+        if store_index == "C" or store_index == 0:
             return self._pick_from_center(piece)
         else:
             return self._pick_from_store(store_index, piece)
