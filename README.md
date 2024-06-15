@@ -2,6 +2,8 @@
 
 This project provides a command line interface (CLI) implementation of the AZUL board game using Python vanilla. It is designed specifically for training and testing AI models on how they play AZUL.
 
+![image](https://github.com/ummatias/azul/assets/39069953/ffda14f7-1302-4879-9d27-22788e58eaaf)
+
 ## Project Overview
 
 AZUL is an abstract strategy board game designed by Michael Kiesling and published by Plan B Games. Players take turns drafting colored tiles from predefined factory displays and placing them onto their personal player boards to score points by completing various patterns and sets of tiles.
