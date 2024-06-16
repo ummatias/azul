@@ -68,7 +68,7 @@ class PlayerBoard:
         if piece_type in [p for p, filled in self.board[line] if filled == 1]:
             raise ValueError("Invalid Placement! Piece already on the wall.")
 
-    def _place_pieces_in_tower(self, line: int, pieces: list) -> list:
+    def _place_pieces_in_tower(self, line, pieces: list) -> list:
         for i in range(len(self.build_tower[line])):
             if self.build_tower[line][i] is self.EMPTY_TILE:
                 self.build_tower[line][i] = pieces.pop(0)
