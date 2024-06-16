@@ -70,7 +70,12 @@ def print_boards(gameboard, board_p1, board_p2) -> None:
         f"BROKEN: {' '.join('🟫' if cell is None else cell for cell in board_p2.broken_pieces)}",
     )
     # print the penalties
-    print(f"{" " * 8}{' '.join(str(penalty) for penalty in board_p1.penalties)}".ljust(65), end="")
+    print(
+        f"{' ' * 8}{' '.join(str(penalty) for penalty in board_p1.penalties)}".ljust(
+            65
+        ),
+        end="",
+    )
     print(f"{' ' * 8}{' '.join(str(penalty) for penalty in board_p2.penalties)}")
 
     print("-" * 115)
