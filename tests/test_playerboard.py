@@ -47,7 +47,6 @@ def test_place_pieces_tower(player_board):
 
 def test_add_to_broken_pieces(player_board):
     player_board.add_to_broken_pieces("⬜")
-    print(player_board.broken_pieces)
     assert player_board.broken_pieces[0] == "⬜"
     for _ in range(7):
         player_board.add_to_broken_pieces("🟦")

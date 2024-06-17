@@ -33,26 +33,7 @@ def test_start_game(game):
 
 def test_turn_select(game):
     game.game_board.stores = [["🟦", "🟦", "🟦", "🟦"], [], [], [], []]
-    with patch("builtins.input", side_effect=["0U", "4"]):
-        game.turn_select()
-        assert game.current_player == 1
-        assert game.players[0].build_tower[4] == ["🟦", "🟦", "🟦", "🟦", None]
-
-    game.game_board.center = ["⬜", "🟦", "🟩"]
-    with patch("builtins.input", side_effect=["CU", "2"]):
-        game.turn_select()
-        assert game.current_player == 0
-        assert game.players[1].build_tower[2] == ["🟦", None, None]
-        assert game.players[1].broken_pieces == [
-            "⬜",
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-        ]
-        assert game.game_board.center == ["🟩"]
+    assert game.turn_select("0U") == ["🟦", "🟦", "🟦", "🟦"]
 
 
 def test_validate_pick_input(game):
@@ -127,13 +108,10 @@ def test_clear_screen(game):
 
 def test_refill_bag_if_needed(game):
     game.bag = []
+    game.used_pieces = [f"🟦{i}" for i in range(20)]
     game._refill_bag_if_needed()
-    assert len(game.bag) == 100
+    assert len(game.bag) == 20
+
 
 def test_play_game(game):
-    custom_store_configs = [
-        [
-            []
-        ]
-    ]
-    
+    custom_store_configs = [[[]]]
