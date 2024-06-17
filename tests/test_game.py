@@ -129,3 +129,11 @@ def test_refill_bag_if_needed(game):
     game.bag = []
     game._refill_bag_if_needed()
     assert len(game.bag) == 100
+
+def test_play_game(game):
+    custom_store_configs = [
+        [
+            []
+        ]
+    ]
+    

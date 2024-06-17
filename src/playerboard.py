@@ -79,8 +79,7 @@ class PlayerBoard:
     def add_to_broken_pieces(self, piece) -> None:
         if self.EMPTY_TILE in self.broken_pieces:
             self.broken_pieces[self.broken_pieces.index(self.EMPTY_TILE)] = piece
-        else:
-            print(f"Piece {piece} discarded as broken pieces limit reached.")
+        # Note: Removed print statement for discarding piece
 
     def calculate_penalties(self) -> int:
         penalty = 0
@@ -125,47 +124,44 @@ class PlayerBoard:
         while 0 <= current_row < len(self.board) and 0 <= current_col < len(
             self.board[row]
         ):
-            if self.board[current_row][current_col][1] == 1:
-                points += 1
-                current_row += row_delta
-                current_col += col_delta
-            else:
+            if self.board[current_row][current_col][1] == 0:
                 break
+            points += 1
+            current_row += row_delta
+            current_col += col_delta
         return points
-
-    def calculate_bonus_points(self) -> int:
-        bonus_points = 0
-        bonus_points += self._calculate_horizontal_bonus_points()
-        bonus_points += self._calculate_vertical_bonus_points()
-        bonus_points += self._calculate_piece_set_bonus_points()
-        return bonus_points
-
-    def _calculate_horizontal_bonus_points(self) -> int:
-        bonus_points = 0
-        for row in self.board:
-            if all(filled == 1 for _, filled in row):
-                bonus_points += 2
-        return bonus_points
-
-    def _calculate_vertical_bonus_points(self) -> int:
-        bonus_points = 0
-        for col in range(len(self.board[0])):
-            if all(self.board[row][col][1] == 1 for row in range(len(self.board))):
-                bonus_points += 7
-        return bonus_points
-
-    def _calculate_piece_set_bonus_points(self) -> int:
-        piece_counts = {}
-        for row in self.board:
-            for piece, filled in row:
-                if filled == 1:
-                    piece_counts[piece] = piece_counts.get(piece, 0) + 1
-        return sum(10 for count in piece_counts.values() if count == 5)
-
-    def check_end_game(self) -> bool:
-        return any(all(filled == 1 for _, filled in row) for row in self.board)
 
     def check_tower(self) -> list:
         return [
             i for i, line in enumerate(self.build_tower) if self.EMPTY_TILE not in line
         ]
+
+    def check_end_game(self) -> bool:
+        return any(all(filled for _, filled in row) for row in self.board)
+
+    def calculate_bonus_points(self) -> int:
+        bonus_points = 0
+        bonus_points += self._calculate_row_bonus()
+        bonus_points += self._calculate_col_bonus()
+        bonus_points += self._calculate_color_bonus()
+        return bonus_points
+
+    def _calculate_row_bonus(self) -> int:
+        return sum(2 for row in self.board if all(filled for _, filled in row))
+
+    def _calculate_col_bonus(self) -> int:
+        cols = len(self.board[0])
+        rows = len(self.board)
+        return sum(
+            7
+            for col in range(cols)
+            if all(self.board[row][col][1] == 1 for row in range(rows))
+        )
+
+    def _calculate_color_bonus(self) -> int:
+        colors = {color: 0 for color, _ in self.board[0]}
+        for row in self.board:
+            for color, filled in row:
+                if filled == 1:
+                    colors[color] += 1
+        return sum(10 for count in colors.values() if count == 5)

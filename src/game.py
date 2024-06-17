@@ -10,6 +10,7 @@ class Game:
     INITIAL_PIECES = ["🟥", "⬛", "🟩", "🟧", "🟦"]
     PIECES_PER_TYPE = 20
     MINIMUM_PIECES_IN_BAG = 4
+    MOVE_HISTORY = []
 
     def __init__(self, qtd_players=2) -> None:
         self.bag = self.INITIAL_PIECES * self.PIECES_PER_TYPE
@@ -22,57 +23,14 @@ class Game:
         random.shuffle(self.bag)
         self.game_board.distribute_pieces(self.bag)
 
-    def turn_select(self) -> None:
-        player = self.players[self.current_player]
-        self._display_turn_info()
-        pick = input("Pick a Piece | EX: (5U for U in Store 5, CU for U in Center): ")
-
+    def turn_select(self, pick) -> None:
         if not self._validate_pick_input(pick):
-            print("Invalid Input")
-            return self.turn_select()
+            raise ValueError("Invalid Pick")
 
         store_index, piece = self._parse_pick_input(pick)
+        picked = self.game_board.pick_piece(store_index, piece)
 
-        try:
-            picked = self.game_board.pick_piece(store_index, piece)
-        except ValueError as e:
-            print(e)
-            return self.turn_select()
-
-        self._place_picked_pieces(player, picked)
-        self._advance_turn()
-
-    def _display_turn_info(self) -> None:
-        print(f"Player {self.current_player + 1}")
-        print(
-            "Color Codes: R=🟥, B=⬛, G=🟩, Y=🟧, U=🟦, X=⬜ | Extra Line Codes: B=Broken Line"
-        )
-        print("-" * 115)
-
-    def _validate_pick_input(self, pick: str) -> bool:
-        return len(pick) >= 2 and (pick[0].isdigit() or pick[0].upper() == "C")
-
-    def _parse_pick_input(self, pick: str) -> tuple:
-        store_index = pick[0].upper()
-        piece = pick[1].upper()
-        if store_index != "C":
-            store_index = int(store_index)
-        return store_index, piece
-
-    def _place_picked_pieces(self, player: PlayerBoard, picked: list) -> None:
-        while picked:
-            print("-" * 115)
-            print(f"{' ' * (50 - len(picked))}To be placed: {' '.join(picked)}")
-            print("-" * 115)
-            line = input("Place pieces in the tower (line number): ")
-            try:
-                picked = player.place_pieces_tower(picked, line)
-            except ValueError as e:
-                print(e)
-
-    def _advance_turn(self) -> None:
-        print("-" * 20)
-        self.current_player = (self.current_player + 1) % len(self.players)
+        return picked
 
     def turn_placement(self) -> list:
         used_pieces = []
@@ -101,14 +59,40 @@ class Game:
         self.start()
         while not any(player.check_end_game() for player in self.players):
             while not self.all_stores_empty():
-                self._clear_screen()
-                self._display_game_status()
-                self.turn_select()
+                self._update_display()
+                pick = input(
+                    "Pick a Piece | EX: (5U for U in Store 5, CU for U in Center): "
+                )
+                was_picked = False
+                while not was_picked:
+                    try:
+                        picked = self.turn_select(pick)
+                        was_picked = True
+                    except ValueError as e:
+                        print(e)
+
+                player = self.players[self.current_player]
+                while picked:
+                    self._update_display(picked)
+                    line = input("Place pieces in the tower (line number): ")
+                    player.place_pieces_tower(picked, line)
+                self._advance_turn()
             self.used_pieces.extend(self.turn_placement())
             self.current_player = self.find_starting_player()
             self._refill_bag_if_needed()
             self.game_board.distribute_pieces(self.bag)
         self._end_game()
+
+    def _update_display(self, picked=None) -> None:
+        self._clear_screen()
+        self._display_game_status()
+        self._display_turn_info()
+        if picked:
+            self._display_remain_pieces_to_place(picked)
+
+    def _display_remain_pieces_to_place(self, picked) -> None:
+        print(f"{' ' * (50 - len(picked))}To be placed: {' '.join(picked)}")
+        print("-" * 115)
 
     def _clear_screen(self) -> None:
         os.system("clear" if os.name == "nt" else "printf '\033c'")
@@ -121,10 +105,31 @@ class Game:
 
     def _refill_bag_if_needed(self) -> None:
         if len(self.bag) < self.MINIMUM_PIECES_IN_BAG * len(self.game_board.stores):
-            self.bag.extend(self.INITIAL_PIECES * self.PIECES_PER_TYPE)
+            self.bag.extend(self.used_pieces)
             random.shuffle(self.bag)
 
     def _end_game(self) -> None:
         print("Game Over")
         for i, player in enumerate(self.players):
             print(f"Player {i + 1} score: {player.score}")
+
+    def _display_turn_info(self) -> None:
+        print(f"Player {self.current_player + 1}")
+        print(
+            "Color Codes: R=🟥, B=⬛, G=🟩, Y=🟧, U=🟦, X=⬜ | Extra Line Codes: B=Broken Line"
+        )
+        print("-" * 115)
+
+    def _validate_pick_input(self, pick: str) -> bool:
+        return len(pick) >= 2 and (pick[0].isdigit() or pick[0].upper() == "C")
+
+    def _parse_pick_input(self, pick: str) -> tuple:
+        store_index = pick[0].upper()
+        piece = pick[1].upper()
+        if store_index != "C":
+            store_index = int(store_index)
+        return store_index, piece
+
+    def _advance_turn(self) -> None:
+        print("-" * 20)
+        self.current_player = (self.current_player + 1) % len(self.players)
