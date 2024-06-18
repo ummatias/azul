@@ -28,7 +28,7 @@ def main():
         game.play_game()
     elif option == "2":
         game = Game()
-        game.play_with_ai()
+        game.play_game_ai()
     elif option == "3":
         print("Goodbye!")
     else:

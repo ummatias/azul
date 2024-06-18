@@ -51,12 +51,18 @@ class PlayerBoard:
                 if not pieces:
                     break
         return pieces
-
     def get_possible_moves(self, pieces: list):
-        def backtrack(start_idx, current_distribution):
+        if "⬜" in pieces:
+            pieces.remove("⬜")
+
+        def can_accommodate_all_pieces(row, pieces):
+            return len([x for x in self.build_tower[row] if x is None]) >= len(pieces)
+
+        def backtrack(start_idx, current_distribution, handle=False):
             if start_idx == len(pieces):
                 result.append(current_distribution[:])
                 return
+            
             for row in range(len(self.build_tower)):
                 try:
                     if row in current_distribution:
@@ -64,17 +70,20 @@ class PlayerBoard:
                     self._validate_line_number(row)
                     self._validate_placement(row, pieces[start_idx])
                     current_distribution.append(row)
-                    backtrack(start_idx + 1, current_distribution)
+                    size = sum(current_distribution) + len(current_distribution)
+                    if size >= len(pieces):
+                        result.append(current_distribution[:])
+                    else:
+                        backtrack(start_idx + 1, current_distribution, handle)
                     current_distribution.pop()
                 except:
                     continue
 
-            if start_idx == len(pieces) - 1:
-                current_distribution.append("B")
-                backtrack(start_idx + 1, current_distribution)
-                current_distribution.pop()
-
         result = []
+        for row in range(len(self.build_tower)):
+            if can_accommodate_all_pieces(row, pieces):
+                result.append([row])
+
         backtrack(0, [])
         return result
 

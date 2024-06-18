@@ -4,6 +4,7 @@ import random
 
 from gameboard import GameBoard
 from playerboard import PlayerBoard
+from ai.minmax import MinMaxPlayer
 from util import print_boards
 
 
@@ -58,7 +59,7 @@ class Game:
 
     def play_game(self) -> None:
         self.start()
-        while not any(player.check_end_game() for player in self.players):
+        while not self.check_end_game():
             while not self.all_stores_empty():
                 self._update_display()
                 state = {
@@ -102,6 +103,42 @@ class Game:
             self._refill_bag_if_needed()
             self.game_board.distribute_pieces(self.bag)
         self._end_game()
+        
+    def play_game_ai(self) -> None:
+        self.start()
+        AI_INDEX = 1
+        AI_PLAYER = MinMaxPlayer(3, AI_INDEX)
+        while not any(player.check_end_game() for player in self.players):
+            while not self.all_stores_empty():
+                self._update_display()
+                if self.current_player != AI_INDEX:
+                    pick = input(
+                    "Pick a Piece | EX: (5U for U in Store 5, CU for U in Center): "
+                    )
+                    was_picked = False
+                    while not was_picked:
+                        try:
+                            picked = self.turn_select(pick)
+                            was_picked = True
+                        except ValueError as e:
+                            print(e)
+
+                    player = self.players[self.current_player]
+                    while picked:
+                        self._update_display(picked)
+                        line = input("Place pieces in the tower (line number): ")
+                        picked = player.place_pieces_tower(picked, line)
+                    self._advance_turn()
+                else:
+                    best_move = AI_PLAYER.get_best_move_2(self)
+                    print(best_move)
+                    # picked = self.turn_select(best_move[0])
+                    # player = self.players[self.current_player]
+                    # while picked:
+                    #     player.place_pieces_tower(picked, best_move[1])
+                    # self._advance_turn()
+                    
+            
 
     def undo_move(self):
         game_status = self.HISTORY[-1]
@@ -113,9 +150,12 @@ class Game:
         self.players[self.current_player].broken_pieces = game_status["broken"]
         self.game_board.stores = game_status["stores"]
         self.game_board.center = game_status["center"]
+        
+    def check_end_game(self):
+        return any(player.check_end_game() for player in self.players)
 
     def _update_display(self, picked=None) -> None:
-        self._clear_screen()
+        #self._clear_screen()
         self._display_game_status()
         self._display_turn_info()
         if picked:
