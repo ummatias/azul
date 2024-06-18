@@ -32,6 +32,8 @@ class PlayerBoard:
 
     def place_pieces_tower(self, pieces: list, line) -> list:
         pieces = self._handle_broken_piece(pieces, "⬜")
+        if not pieces:
+            return []
 
         if line == "b" or line == "B":
             self._add_all_to_broken_pieces(pieces)
@@ -51,41 +53,41 @@ class PlayerBoard:
                 if not pieces:
                     break
         return pieces
-    def get_possible_moves(self, pieces: list):
+    
+    def get_possible_moves(self, pieces: list) -> list:
         if "⬜" in pieces:
-            pieces.remove("⬜")
-
-        def can_accommodate_all_pieces(row, pieces):
-            return len([x for x in self.build_tower[row] if x is None]) >= len(pieces)
-
-        def backtrack(start_idx, current_distribution, handle=False):
-            if start_idx == len(pieces):
-                result.append(current_distribution[:])
+            return []
+        
+        if not pieces:
+            return []
+        
+        def backtrack(placed_pieces, remaining_pieces):
+            if not remaining_pieces:
+                result.append(placed_pieces[:])
                 return
-            
-            for row in range(len(self.build_tower)):
+
+            for line in range(len(self.build_tower)):
+                original_row = self.build_tower[line][:]
                 try:
-                    if row in current_distribution:
-                        continue
-                    self._validate_line_number(row)
-                    self._validate_placement(row, pieces[start_idx])
-                    current_distribution.append(row)
-                    size = sum(current_distribution) + len(current_distribution)
-                    if size >= len(pieces):
-                        result.append(current_distribution[:])
+                    remaining_pieces_after_placement = self.place_pieces_tower(remaining_pieces, line)
+                    placed_pieces.append(line)
+
+                    if not remaining_pieces_after_placement:
+                        backtrack(placed_pieces, remaining_pieces_after_placement)
                     else:
-                        backtrack(start_idx + 1, current_distribution, handle)
-                    current_distribution.pop()
-                except:
-                    continue
+                        backtrack(placed_pieces, remaining_pieces_after_placement)
 
+                    placed_pieces.pop()
+                except ValueError:
+                    pass
+                finally:
+                    self.build_tower[line] = original_row  # Reset the row to original state
+    
         result = []
-        for row in range(len(self.build_tower)):
-            if can_accommodate_all_pieces(row, pieces):
-                result.append([row])
-
-        backtrack(0, [])
+        backtrack([], pieces)
+        result.append(["B"])
         return result
+    
 
     def _handle_broken_piece(self, pieces: list, piece_type: str) -> list:
         if piece_type in pieces:

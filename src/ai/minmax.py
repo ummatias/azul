@@ -29,6 +29,9 @@ class MinMaxPlayer:
                 player_copy = copy.deepcopy(game_copy.players[self.player])
                 places_to_play = player_copy.get_possible_moves(picked_pieces)
                 print(f"MAX PLAYER PLACES TO PLAY:", places_to_play)
+                for i in player_copy.build_tower:
+                    print(i)
+                print("*" * 50)
                 for places in places_to_play:
                     game_copy_2 = copy.deepcopy(game_copy)
                     player_copy_2 = copy.deepcopy(player_copy)
@@ -63,6 +66,9 @@ class MinMaxPlayer:
                 player_copy = copy.deepcopy(game_copy.players[0 if self.player == 1 else 1])
                 places_to_play = player_copy.get_possible_moves(picked_pieces)
                 print(f"MIN PLAYER PLACES TO PLAY:", places_to_play)
+                for i in player_copy.build_tower:
+                    print(i)
+                print("*" * 50)
                 for places in places_to_play:
                     game_copy_2 = copy.deepcopy(game_copy)
                     player_copy_2 = copy.deepcopy(player_copy)
@@ -82,48 +88,7 @@ class MinMaxPlayer:
         
     def _clear_screen(self) -> None:
         os.system("clear" if os.name == "nt" else "printf '\033c'")
-
-    def get_best_move(self, game):
-        print("*" * 50)
-        print("SIMULATING MAX PLAYER")
-        best_value = float("-inf")
-        best_move = None
-        c = 0
-        possible_picks = game.game_board.get_possible_moves()
-        for pick in possible_picks:
-            self._clear_screen()
-            c+=1
-            game_copy = copy.deepcopy(game)
-            print("-" * 50)
-            for store in game_copy.game_board.stores:
-                print(store)
-            print(game_copy.game_board.center)
-            print("-" * 50)
-            print(f"MAX PLAYER CHOSE: {pick}")
-            picked_pieces = game_copy.turn_select(f"{pick[0]}{pick[1]}")
-            print(f"MAX PLAYER PICKED: {picked_pieces}")
-            player_copy = copy.deepcopy(game_copy.players[self.player])
-            places_to_play = player_copy.get_possible_moves(picked_pieces)
-            print(f"MIN PLAYER PLACES TO PLAY:", places_to_play)
-            for places in places_to_play:
-                game_copy_2 = copy.deepcopy(game_copy)
-                player_copy_2 = copy.deepcopy(game_copy.players[self.player])
-                print(f"MAX PLAYER - Gonna {places}")
-                for place in places:
-                    
-                    print(f"MIN PLAYER - Placing {picked_pieces} in line {place}")
-                    picked_pieces = player_copy_2.place_pieces_tower(picked_pieces, place)
-                    print("*" * 50)
-                game._advance_turn()
-    
-                value = self.minmax(game_copy_2, self.depth, False)
-                print(f"Value: {value}")
-                if value > best_value:
-                    best_value = value
-                    best_move = pick
-        return best_move
-    
-                    
+            
     def get_best_move_2(self, game):
         best_move = None
         best_value = float("-inf")

@@ -34,8 +34,8 @@ b2_tower = [
 ]
 p.build_tower = copy.deepcopy(b_tower)
 
-#p_moves = p.get_possible_moves(['🟧', '🟧'])
-p_moves_2 = p2.get_possible_moves(['🟧', '🟧', '🟧'])
-#print(p_moves)
+p_moves = p.get_possible_moves(['🟧', '🟧'])
+p_moves_2 = p2.get_possible_moves(['⬜'])
+print(p_moves)
 print()
 print(p_moves_2)
