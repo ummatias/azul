@@ -60,13 +60,11 @@ def print_boards(gameboard, board_p1, board_p2) -> None:
     print("-" * 115)
 
     print(
-        # if the player has broken pieces no broken pieces, print 7 🟫'
         f"BROKEN: {' '.join('🟫' if cell is None else cell for cell in board_p1.broken_pieces)}",
         end="".rjust(37),
     )
 
     print(
-        # if the player has broken pieces no broken pieces, print 7 🟫'
         f"BROKEN: {' '.join('🟫' if cell is None else cell for cell in board_p2.broken_pieces)}",
     )
     # print the penalties

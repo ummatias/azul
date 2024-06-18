@@ -21,16 +21,6 @@ class GameBoard:
             store.extend(self._draw_pieces(pieces, self.PIECES_PER_STORE))
         self.center = self.CENTER_INITIAL.copy()
 
-    def get_possible_moves(self) -> list:
-        moves = set()
-        for i, store in enumerate(self.stores):
-            for piece in store:
-                moves.add((i, self.REVERSE_PIECE_DICT[piece]))
-        for piece in self.center:
-            moves.add(("C", self.REVERSE_PIECE_DICT[piece]))
-
-        return list(moves)
-
     def _draw_pieces(self, pieces: list, count: int) -> list:
         drawn_pieces = []
         for _ in range(count):

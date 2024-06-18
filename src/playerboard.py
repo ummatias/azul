@@ -54,49 +54,6 @@ class PlayerBoard:
                     break
         return pieces
 
-    def get_possible_moves(self, pieces: list) -> list:
-
-        if "⬜" in pieces:
-            return []
-
-        if not pieces:
-            return []
-
-        def backtrack(placed_pieces, remaining_pieces):
-            if not remaining_pieces:
-                result.append(placed_pieces[:])
-                return
-
-            for line in range(len(self.build_tower)):
-                original_row = self.build_tower[line][:]
-                try:
-                    remaining_pieces_after_placement = self.place_pieces_tower(
-                        remaining_pieces, line
-                    )
-                    placed_pieces.append(line)
-
-                    if not remaining_pieces_after_placement:
-                        backtrack(placed_pieces, remaining_pieces_after_placement)
-                    else:
-                        backtrack(placed_pieces, remaining_pieces_after_placement)
-
-                    placed_pieces.pop()
-                except ValueError:
-                    pass
-                finally:
-                    self.build_tower[line] = original_row
-
-        result = []
-        backtrack([], pieces)
-        for i in range(len(result)):
-            if len(result[i]) >= 2:
-                b_element = result[i][:-1] + ["B"]
-                if b_element not in result:
-                    result.append(b_element)
-        result.sort(key=lambda x: x[0])
-        result.append(["B"])
-        return result
-
     def _handle_broken_piece(self, pieces: list, piece_type: str) -> list:
         if piece_type in pieces:
             self.add_to_broken_pieces(piece_type)

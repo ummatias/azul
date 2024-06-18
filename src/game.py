@@ -117,7 +117,7 @@ class Game:
                     else "Player 2"
                 ),
             },
-            open("history.json", "a"),
+            open("history.json", "a", encoding="utf-8", newline="\n"),
         )
         self._end_game()
 
