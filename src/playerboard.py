@@ -1,3 +1,6 @@
+import copy
+
+
 class PlayerBoard:
     EMPTY_TILE = None
     BROKEN_TILE_LIMIT = 7
@@ -41,6 +44,40 @@ class PlayerBoard:
         pieces = self._place_pieces_in_tower(line, pieces)
         return pieces
 
+    def _place_pieces_in_tower(self, line, pieces: list) -> list:
+        for i in range(len(self.build_tower[line])):
+            if self.build_tower[line][i] is self.EMPTY_TILE:
+                self.build_tower[line][i] = pieces.pop(0)
+                if not pieces:
+                    break
+        return pieces
+
+    def get_possible_moves(self, pieces: list):
+        def backtrack(start_idx, current_distribution):
+            if start_idx == len(pieces):
+                result.append(current_distribution[:])
+                return
+            for row in range(len(self.build_tower)):
+                try:
+                    if row in current_distribution:
+                        continue
+                    self._validate_line_number(row)
+                    self._validate_placement(row, pieces[start_idx])
+                    current_distribution.append(row)
+                    backtrack(start_idx + 1, current_distribution)
+                    current_distribution.pop()
+                except:
+                    continue
+
+            if start_idx == len(pieces) - 1:
+                current_distribution.append("B")
+                backtrack(start_idx + 1, current_distribution)
+                current_distribution.pop()
+
+        result = []
+        backtrack(0, [])
+        return result
+
     def _handle_broken_piece(self, pieces: list, piece_type: str) -> list:
         if piece_type in pieces:
             self.add_to_broken_pieces(piece_type)
@@ -67,14 +104,6 @@ class PlayerBoard:
             raise ValueError("Invalid Placement! No empty space in the line.")
         if piece_type in [p for p, filled in self.board[line] if filled == 1]:
             raise ValueError("Invalid Placement! Piece already on the wall.")
-
-    def _place_pieces_in_tower(self, line, pieces: list) -> list:
-        for i in range(len(self.build_tower[line])):
-            if self.build_tower[line][i] is self.EMPTY_TILE:
-                self.build_tower[line][i] = pieces.pop(0)
-                if not pieces:
-                    break
-        return pieces
 
     def add_to_broken_pieces(self, piece) -> None:
         if self.EMPTY_TILE in self.broken_pieces:
