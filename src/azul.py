@@ -13,8 +13,8 @@ def menu():
 
     menu_options = ["Play Game", "Play Game with AI", "Exit"]
     print(menu_art)
-    print(f"{" " * 34 } Welcome to Azul")
-    print(f"{" " * 33 } Select an option:")
+    print(f"{' ' * 34 } Welcome to Azul")
+    print(f"{' ' * 33 } Select an option:")
     print()
     for i, option in enumerate(menu_options, 1):
         print(f"{' ' * 33  } {i}. {option}")

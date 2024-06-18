@@ -1,4 +1,5 @@
 import copy
+import json
 import os
 import random
 
@@ -11,6 +12,7 @@ class Game:
     INITIAL_PIECES = ["🟥", "⬛", "🟩", "🟧", "🟦"]
     PIECES_PER_TYPE = 20
     MINIMUM_PIECES_IN_BAG = 4
+    HISTORY = []
 
     def __init__(self, qtd_players=2) -> None:
         self.bag = self.INITIAL_PIECES * self.PIECES_PER_TYPE
@@ -60,55 +62,68 @@ class Game:
         while not self.check_end_game():
             while not self.all_stores_empty():
                 self._update_display()
-                pick = input(
-                    "Pick a Piece | EX: (5U for U in Store 5, CU for U in Center): "
-                )
+                state = {
+                    "player": self.current_player,
+                    "p1_score": copy.deepcopy(self.players[0].score),
+                    "p2_score": copy.deepcopy(self.players[1].score),
+                    "build_tower": copy.deepcopy(
+                        self.players[self.current_player].build_tower
+                    ),
+                    "board": copy.deepcopy(self.players[self.current_player].board),
+                    "broken": copy.deepcopy(
+                        self.players[self.current_player].broken_pieces
+                    ),
+                    "stores": copy.deepcopy(self.game_board.stores),
+                    "center": copy.deepcopy(self.game_board.center),
+                }
                 was_picked = False
                 while not was_picked:
                     try:
+                        pick = input(
+                            "Pick a Piece | EX: (5U for U in Store 5, CU for U in Center): "
+                        )
                         picked = self.turn_select(pick)
                         was_picked = True
                     except ValueError as e:
                         print(e)
 
                 player = self.players[self.current_player]
+                place_lines = []
                 while picked:
                     self._update_display(picked)
                     line = input("Place pieces in the tower (line number): ")
-                    picked = player.place_pieces_tower(picked, line)
+                    try:
+                        picked = player.place_pieces_tower(picked, line)
+                    except ValueError as e:
+                        print(e)
+
+                    place_lines.append(line)
+                state["pick"] = pick
+                state["place_lines"] = place_lines
+                self.HISTORY.append(state)
                 self._advance_turn()
-            self.used_pieces.extend(self.turn_placement())
             self.current_player = self.find_starting_player()
+            self.used_pieces.extend(self.turn_placement())
+            self._update_display()
             self._refill_bag_if_needed()
             self.game_board.distribute_pieces(self.bag)
+        json.dump(
+            {
+                "move_history": self.HISTORY,
+                "final_scores": [player.score for player in self.players],
+                "winner": (
+                    "Player 1"
+                    if self.players[0].score > self.players[1].score
+                    else "Player 2"
+                ),
+            },
+            open("history.json", "a"),
+        )
         self._end_game()
 
     def play_game_ai(self) -> None:
-        self.start()
-        AI_INDEX = 1
-        while not any(player.check_end_game() for player in self.players):
-            while not self.all_stores_empty():
-                self._update_display()
-                if self.current_player != AI_INDEX:
-                    pick = input(
-                        "Pick a Piece | EX: (5U for U in Store 5, CU for U in Center): "
-                    )
-                    was_picked = False
-                    while not was_picked:
-                        try:
-                            picked = self.turn_select(pick)
-                            was_picked = True
-                        except ValueError as e:
-                            print(e)
-
-                    player = self.players[self.current_player]
-                    while picked:
-                        self._update_display(picked)
-                        line = input("Place pieces in the tower (line number): ")
-                        picked = player.place_pieces_tower(picked, line)
-                    self._advance_turn()
-                else:
-                    pass
+        print("AI Game")
+        print("STILL IN DEVELOPMENT")
 
     def check_end_game(self):
         return any(player.check_end_game() for player in self.players)
